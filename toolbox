@@ -33,12 +33,14 @@ install() {
 configure() {
 
     # Bash Profile
-    # FIXME: 'cd /mnt/c/Users/${user}/b/'
     {
         echo '# Generated Profile"'
         echo 'echo "Loading Profile from ~/.bash_profile"'
         echo ''
-        echo 'cd /mnt/c/Users/b/b/'
+        echo 'cd /mnt/c/Users/$(whoami)/$(whoami)/'
+        echo ''
+        echo '# Go Path'
+        echo 'export PATH=$PATH:/home/$(whoami)/go/bin/'
         echo ''
         echo 'push() {'
         echo '  echo "Pushing commit with message: ${1:-update}"'
