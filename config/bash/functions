@@ -313,6 +313,10 @@ tmux_new_window() {
     tmux select-window -t $name
 }
 
+tmux_list_config() {
+    tmux show -g
+}
+
 path() {
     echo $PATH | tr : '\n'
 }

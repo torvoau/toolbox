@@ -6,16 +6,14 @@ Scripts and files used for setting up my dev environment
 # Usage
 
 ```
-# Remotely
-curl -s https://raw.githubusercontent.com/torvoau/toolbox/main/install.sh | bash -s
+# Install to /usr/local/bin/toolbox
+git clone --depth 1 https://github.com/torvodev/toolbox.git && cd toolbox && ./toolbox install
 
-# Locally
-bash ./install.sh
+# Add to ~/.bash_profile to run on terminal start
+toolbox configure
 
-# Using a Zip
-# curl https://github.com/torvoau/toolbox/archive/refs/heads/main.zip -o toolbox.zip && unzip toolbox.zip && rm toolbox.zip && ./toolbox/toolbox
-
-# Using Git
+# Run manually
+toolbox run
 ```
 
 # Todo
