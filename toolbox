@@ -9,10 +9,20 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 install() {
 
-    PATH="$SCRIPT_DIR/tools/:$PATH"
-    # rm -rf $SCRIPT_DIR/tools/
-    mkdir -p $SCRIPT_DIR/tools/ && (
-        cd $SCRIPT_DIR/tools/
+    PATH="$SCRIPT_DIR/tools/bin/:$PATH"
+    rm -rf $SCRIPT_DIR/tools/
+    mkdir -p $SCRIPT_DIR/tools/
+
+    # TMUX
+    sudo apt-get install -y libncurses-dev libevent-dev
+    sudo apt-get install -y autoconf automake pkg-config
+    ( 
+        cd $SCRIPT_DIR/source/ && git clone --depth 1 https://github.com/tmux/tmux.git
+        # cd $SCRIPT_DIR/source/tmux/ 
+        # sh autogen.sh 
+        # ./configure --prefix=$SCRIPT_DIR/tools/ --exec-prefix=$SCRIPT_DIR/tools/
+        # make
+    )
 
         # # Updates
         # sudo apt-get update -y
@@ -39,11 +49,14 @@ install() {
         # FIXME: Bat
         # FIXME: RG
 
-        # TMUX
+        
 
-        # sudo apt-get install -y autoconf automake pkg-config
-        # git clone --depth 1 https://github.com/tmux/tmux.git
-        # ( cd tmux && sh autogen.sh && ./configure && make )
+        # Ncurses for TMUX
+        # curl -O https://invisible-island.net/datafiles/release/ncurses.tar.gz
+        # tar xzf ncurses-6.5.tar.gz && rm ncurses-6.5.tar.gz && mv ncurses-6.5 ncurses
+        # (  )
+
+        
 
         # curl -L https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz -O
         # tar xzf libevent-2.1.12-stable.tar.gz && rm libevent-2.1.12-stable.tar.gz
@@ -70,7 +83,7 @@ install() {
 
         # echo "$SCRIPT_DIR/toolbox run" > /usr/bin/toolbox
         # chmod +x /usr/bin/toolbox
-    )
+    # )
 }
 
 run() {
