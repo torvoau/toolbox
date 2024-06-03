@@ -1,0 +1,119 @@
+#!/usr/bin/env bash 
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+# FIXME: Make all variables local or global
+# FIXME: Url Install vs Clone
+# FIXME: Add this https://github.com/mislav/dotfiles/blob/d2af5900fce38238d1202aa43e7332b20add6205/bin/tmux-session
+# git config pull.rebase false
+
+install() {
+
+    PATH="$SCRIPT_DIR/tools/:$PATH"
+    # rm -rf $SCRIPT_DIR/tools/
+    mkdir -p $SCRIPT_DIR/tools/ && (
+        cd $SCRIPT_DIR/tools/
+
+        # # Updates
+        # sudo apt-get update -y
+        # sudo apt-get upgrade -y
+        # # Python3
+        # sudo apt-get install -y python3
+        # sudo apt-get install -y python3-pip
+        # # Github CLI
+        # sudo apt-get install -y gh  
+        # # Fzf
+        # # FIXME: Install with tarball
+        # sudo apt-get-install -y fzf
+        # # Tmux
+        # sudo apt-get-install -y tmux
+        # # Git
+        # # FIXME: Add this
+        # # Git Filter Repo
+        # sudo curl https://raw.githubusercontent.com/newren/git-filter-repo/main/git-filter-repo -o /usr/local/bin/git-filter-repo
+        # sudo chmod +x /usr/local/bin/git-filter-repo
+        # # Nvim
+        # # FIXME: Install with tarball
+        # # Tmux
+        # # FIXME: Install with tarball
+        # FIXME: Bat
+        # FIXME: RG
+
+        # TMUX
+
+        # sudo apt-get install -y autoconf automake pkg-config
+        # git clone --depth 1 https://github.com/tmux/tmux.git
+        # ( cd tmux && sh autogen.sh && ./configure && make )
+
+        # curl -L https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz -O
+        # tar xzf libevent-2.1.12-stable.tar.gz && rm libevent-2.1.12-stable.tar.gz
+        # mv libevent-2.1.12-stable libevent
+        # # mkdir build && cd build
+        # # cmake .. # Default to Unix Makefiles
+        # # make
+        # # make verify # Optional
+        # curl -L https://invisible-mirror.net/archives/ncurses/ncurses-6.5.tar.gz -O
+        # tar xzf ncurses-6.5.tar.gz && rm ncurses-6.5.tar.gz
+        # mv ncurses-6.5 ncurses
+        # curl -L https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz -O
+        # tar xzf tmux-3.4.tar.gz && rm -r tmux-3.4.tar.gz
+        # mv tmux-3.4 tmux
+        # ( cd tmux && ./configure && make ) #  && sudo make install
+
+        # # NVIM
+        # curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz -O
+        # tar xzf nvim-linux64.tar.gz && rm -r nvim-linux64.tar.gz
+        # mv nvim-linux64 nvim
+        # # ( cd )
+
+        # ./nvim-linux64/bin/nvim
+
+        # echo "$SCRIPT_DIR/toolbox run" > /usr/bin/toolbox
+        # chmod +x /usr/bin/toolbox
+    )
+}
+
+run() {
+    if [[ -n "${TMUX}" ]]; then return 0; fi
+    tmux -f $SCRIPT_DIR/tmux/.tmux.conf
+    tmux -f $SCRIPT_DIR/tmux/.tmux.conf new-session -d -s main
+    tmux -f $SCRIPT_DIR/tmux/.tmux.conf send-keys -t main "$SCRIPT_DIR/toolbox init" Enter
+    tmux -f $SCRIPT_DIR/tmux/.tmux.conf attach -t main
+}
+
+init() {
+
+    source $SCRIPT_DIR/bash/functions.sh
+    
+    alias vi="nvim"
+    alias vim="nvim"
+    alias nvim="$SCRIPT_DIR/tools/nvim/bin/nvim -u $SCRIPT_DIR/config/nvim/init.lua"
+
+    # color_init
+
+    # # Custom Home Directory
+    # if [[ "$(pwd)" == "/home/$(whoami)" ]]; then
+    #     cd /mnt/c/Users/$(whoami)/$(whoami)/
+    # fi
+
+    # # Go Path
+    # export PATH="$PATH:/home/$(whoami)/go/bin/"
+
+}
+
+# configure() {
+#     echo "source $SCRIPT_DIR/toolbox && toolbox_init" > ~/.bash_profile # FIXME Add "&& exit"
+#     find $SCRIPT_DIR/config/ -mindepth 1 -maxdepth 1 | while read line; do 
+#         cp -rf $line ~/
+#     done
+#     source ~/.bash_profile
+#     if [[ -n "${TMUX}" ]]; then tmux source ~/.tmux.conf; fi
+# }
+
+# if [[ ! $# -eq 0 ]] ; then 
+#     main
+# else 
+#     eval ${@}
+# fi
+
+eval ${@}
