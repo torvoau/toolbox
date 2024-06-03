@@ -2,9 +2,17 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+# FIXME: Add parallelism    
+# sleep 30 &
+# process_id=$!
+# echo "PID: $process_id"
+# wait $process_id
+# echo "Exit status: $?"
+
 install() {
 
     PATH="$SCRIPT_DIR/tools/bin/:$PATH"
+    GOROOT="$SCRIPT_DIR/tools/"
     mkdir -p $SCRIPT_DIR/tools/
     mkdir -p $SCRIPT_DIR/tools/bin/
     mkdir -p $SCRIPT_DIR/tools/lib/
@@ -12,26 +20,39 @@ install() {
     mkdir -p $SCRIPT_DIR/tmp/
     # rm -rf $SCRIPT_DIR/tmp/*
 
-    # TMUX
-    (   
-        sudo apt-get install -y libncurses-dev libevent-dev autoconf automake pkg-config
+    set -x
+
+    echo "# GO"
+    if [[ ! -f "$SCRIPT_DIR/tools/bin/go" ]]; then ( 
+        cd $SCRIPT_DIR/tmp/ && curl -L -o go.tar.gz "https://go.dev/dl/go1.22.3.linux-$(dpkg --print-architecture).tar.gz"
+        rm -rf $SCRIPT_DIR/tmp/go/ && tar -xzf $SCRIPT_DIR/tmp/go.tar.gz && rm $SCRIPT_DIR/tmp/go.tar.gz
+        mv $SCRIPT_DIR/tmp/go/bin/* $SCRIPT_DIR/tools/bin/
+        mv $SCRIPT_DIR/tmp/go/lib/* $SCRIPT_DIR/tools/lib/
+        go version
+    ) fi
+
+    exit 0
+
+    echo "# TMUX"
+    if [[ ! -f "$SCRIPT_DIR/tools/bin/tmux" ]]; then (   
+        sudo apt-get install -y libncurses-dev libevent-dev autoconf automake pkg-config yacc
         cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/tmux/tmux.git
         cd $SCRIPT_DIR/tmp/tmux/ && sh autogen.sh && ./configure && make
         mv $SCRIPT_DIR/tmp/tmux/tmux $SCRIPT_DIR/tools/bin/
-    )
+    ) fi
 
-    # NVIM
-    ( 
+    echo "# NVIM"
+    if [[ ! -f "$SCRIPT_DIR/tools/bin/nvim" ]]; then (
         sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential
         cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/neovim/neovim.git
         cd $SCRIPT_DIR/tmp/neovim/ && make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_INSTALL_PREFIX=$SCRIPT_DIR/tools/ && make install
-    )
+    ) fi
 
-    # FZF
-    (
+    echo "# FZF"
+    if [[ ! -f "$SCRIPT_DIR/tools/bin/fzf" ]]; then (
         cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/junegunn/fzf.git 
         cd $SCRIPT_DIR/tmp/fzf/ && go build && mv ./fzf $SCRIPT_DIR/tools/bin/
-    )
+    ) fi
 
     sudo bash -c "echo '#!/usr/bin/env bash'       > /usr/local/bin/toolbox"
     sudo bash -c "echo '$SCRIPT_DIR/toolbox \${@}' > /usr/local/bin/toolbox"
