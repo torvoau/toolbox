@@ -282,7 +282,8 @@ tmux_find_cd() {
     target=$(find -mindepth 1 -maxdepth 3 -type d | fzf_pretty -e --preview "tree {}" --header "[F]ind Directory")
     if [[ -z "${target}" ]]; then tmux kill-window && return 0; fi
     tmux_new_window $target
-    tmux send-keys cd Space $target Enter
+    tmux send-keys "source <(toolbox init)" Enter
+    tmux send-keys "cd " $target " && clear" Enter
     tmux kill-window -t :!
 }
 
@@ -290,7 +291,8 @@ tmux_find_nvim() {
     target=$(find -mindepth 1 -maxdepth 3 -type f | fzf_pretty -e --preview "cat {}" --header "[E]dit File")
     if [[ -z "${target}" ]]; then tmux kill-window && return 0; fi
     tmux_new_window $target
-    tmux send-keys nvim Space $target Enter
+    tmux send-keys "source <(toolbox init)" Enter
+    tmux send-keys "nvim " $target " && clear" Enter
     tmux kill-window -t :!
 }
 
@@ -298,6 +300,7 @@ tmux_find_get() {
     target=$(find -mindepth 1 -maxdepth 3 -type f -executable | fzf_pretty -e --preview "cat {}" --header "[G]et File") 
     if [[ -z "${target}" ]]; then tmux kill-window && return 0; fi
     tmux_new_window $target
+    tmux send-keys "source <(toolbox init)" Enter
     tmux send-keys $target Space
     tmux kill-window -t :!
 }

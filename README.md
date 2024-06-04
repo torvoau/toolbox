@@ -7,7 +7,7 @@ Scripts and files used for setting up my dev environment
 
 ```
 # Install to /usr/local/bin/toolbox
-git clone --depth 1 https://github.com/torvodev/toolbox.git && cd toolbox && ./toolbox install
+git clone --depth 1 https://github.com/torvodev/toolbox.git && cd toolbox && sudo ./toolbox install
 
 # Add to ~/.bash_profile to run on terminal start
 toolbox configure
