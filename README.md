@@ -18,6 +18,8 @@ toolbox run
 
 # Todo
 
+ - Make configure idempotent and print changes
+ - Install tree, bat, rg, ???
  - Tmux send keys before attach
  - Alias Tmux to re-open session
  - Clean up Neovim theme
