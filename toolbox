@@ -56,7 +56,7 @@ install() {
     if [[ ! -d "$SCRIPT_DIR/tools/fzf" ]]; then (
         echo "## FZF BEGIN"
         cd $SCRIPT_DIR/tools/ && git clone --depth 1 https://github.com/junegunn/fzf.git
-        cd $SCRIPT_DIR/tools/fzf/ && go build
+        cd $SCRIPT_DIR/tools/fzf/ && go build -o $SCRIPT_DIR/tools/fzf/bin/ .
         echo "## FZF END"
     ) fi
 
@@ -83,14 +83,14 @@ init() {
     echo "export PATH='$SCRIPT_DIR/bin:$PATH'"
 
     # Bash
-    cat $SCRIPT_DIR/config/bash/aliases
+    # cat $SCRIPT_DIR/config/bash/aliases
     cat $SCRIPT_DIR/config/bash/functions
 
     # Colours
-    colour_init
+    # echo "color_init"
 
     # Git
-    git_init
+    # echo "git_init"
 
     # Switch Home Directory
     if [[ "$(pwd)" == "/home/$(whoami)" ]]; then

@@ -4,4 +4,4 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # VIMRUNTIME="$SCRIPT_DIR/tools/neovim/build/runtime" /
 XDG_CONFIG_HOME="$SCRIPT_DIR/../config/neovim" \
-$SCRIPT_DIR/../tools/neovim/build/bin/nvim ${@}
+$SCRIPT_DIR/../tools/neovim/build/bin/nvim "${@}"
