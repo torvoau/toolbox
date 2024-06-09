@@ -89,6 +89,9 @@ init() {
     # Colours
     colour_init
 
+    # Git
+    git_init
+
     # Switch Home Directory
     if [[ "$(pwd)" == "/home/$(whoami)" ]]; then
         if [[ -n "/mnt/c/Users/$(whoami)/$(whoami)/" ]]; then

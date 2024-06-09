@@ -28,6 +28,8 @@ toolbox run
  - Exit on Vim Exit?
  - Make new window name not finder
  - Fix random characters in Vim: https://github.com/neovim/neovim/issues/28776
+ - Make configure idempotent and print changes
+ - Install tree, bat, rg, ???
  - Tmux send keys before attach
  - Alias Tmux to re-open session
  - Clean up Neovim theme

@@ -28,6 +28,10 @@ shortcuts_list() {
     # vim -c "help index"
 }
 
+git_init() {
+    git config --global pull.rebase false
+}
+
 git_status() {
   git status
 }
