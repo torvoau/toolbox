@@ -5,11 +5,6 @@
 
 -- print("Hello Lua")
 
--- # Directories
--- User Config: ~/.config/nvim/
--- Data/Plugin: ~/.local/share/nvim/
--- Base Config: /usr/share/nvim/
-
 -- # GITHUB THEME DARK
 -- FIXME: This needs to be cleaned up
 require('github-theme').compile()
@@ -75,7 +70,7 @@ vim.opt.splitbelow = true
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
-vim.opt.cursorline = true
+vim.opt.cursorline = false -- true
 vim.opt.scrolloff = 10
 vim.opt.termguicolors = true
 vim.opt.tabstop = 4

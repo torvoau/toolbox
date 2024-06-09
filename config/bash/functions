@@ -1,4 +1,24 @@
 
+vi() {
+    nvim ${@}
+}
+
+vim() {
+    nvim ${@}
+}
+
+man() {
+    export LESS_TERMCAP_mb=$(printf "\e[38;2;255;255;255m") # Start blinking
+    export LESS_TERMCAP_md=$(printf "\e[38;2;33;136;255m") # Start bold mode
+    export LESS_TERMCAP_me=$(printf "\e[38;2;255;255;255m") # End all mode like so, us, mb, md, and mr
+    export LESS_TERMCAP_so=$(printf "\e[38;2;255;255;255m") # Start standout mode
+    export LESS_TERMCAP_se=$(printf "\e[38;2;255;255;255m") # End standout mode
+    export LESS_TERMCAP_us=$(printf "\e[38;2;255;255;255m") # Start underlining
+    export LESS_TERMCAP_ue=$(printf "\e[38;2;255;255;255m") # End underlining
+    export GROFF_NO_SGR=1
+    /usr/bin/man ${@}
+}
+
 shortcuts_list() {
     echo "# Bash Bindings"
     man bash  | grep -e '(C-' -e '(M-' -e '(S-'
@@ -33,93 +53,6 @@ git_cleanup() {
     echo "git reset --hard origin/main"
 }
 
-git_colors() {
-    # git help --config | grep color
-    # git help --config | grep color | while read line; do echo "git config $line ''"; done > colors.txt
-    # git config color.advice ""
-    # git config color.advice.hint ""
-    # git config color.blame.highlightRecent ""
-    # git config color.blame.repeatedLines ""
-    # git config color.branch ""
-    # git config color.branch.current ""
-    # git config color.branch.local ""
-    # git config color.branch.plain ""
-    # git config color.branch.remote ""
-    # git config color.branch.reset ""
-    # git config color.branch.upstream ""
-    # git config color.branch.worktree ""
-    # git config color.decorate.HEAD ""
-    # git config color.decorate.branch ""
-    # git config color.decorate.grafted ""
-    # git config color.decorate.remoteBranch ""
-    # git config color.decorate.stash ""
-    # git config color.decorate.tag ""
-    # git config color.diff ""
-    # git config color.diff.commit ""
-    # git config color.diff.context ""
-    # git config color.diff.contextBold ""
-    # git config color.diff.contextDimmed ""
-    # git config color.diff.frag ""
-    # git config color.diff.func ""
-    # git config color.diff.meta ""
-    # git config color.diff.new ""
-    # git config color.diff.newBold ""
-    # git config color.diff.newDimmed ""
-    # git config color.diff.newMoved ""
-    # git config color.diff.newMovedAlternative ""
-    # git config color.diff.newMovedAlternativeDimmed ""
-    # git config color.diff.newMovedDimmed ""
-    # git config color.diff.old ""
-    # git config color.diff.oldBold ""
-    # git config color.diff.oldDimmed ""
-    # git config color.diff.oldMoved ""
-    # git config color.diff.oldMovedAlternative ""
-    # git config color.diff.oldMovedAlternativeDimmed ""
-    # git config color.diff.oldMovedDimmed ""
-    # git config color.diff.plain ""
-    # git config color.diff.whitespace ""
-    # git config color.grep ""
-    # git config color.grep.column ""
-    # git config color.grep.context ""
-    # git config color.grep.filename ""
-    # git config color.grep.function ""
-    # git config color.grep.lineNumber ""
-    # git config color.grep.match ""
-    # git config color.grep.matchContext ""
-    # git config color.grep.matchSelected ""
-    # git config color.grep.selected ""
-    # git config color.grep.separator ""
-    # git config color.interactive ""
-    # git config color.interactive.error ""
-    # git config color.interactive.header ""
-    # git config color.interactive.help ""
-    # git config color.interactive.plain ""
-    # git config color.interactive.prompt ""
-    # git config color.interactive.reset ""
-    # git config color.pager ""
-    # git config color.push ""
-    # git config color.push.error ""
-    # git config color.remote ""
-    # git config color.remote.error ""
-    # git config color.remote.hint ""
-    # git config color.remote.success ""
-    # git config color.remote.warning ""
-    # git config color.showBranch ""
-    # git config --global color.status ""
-    # git config color.status.added ""
-    # git config color.status.branch ""
-    git config --global color.status.changed "#d73a49"
-    # git config color.status.header ""
-    # git config color.status.localBranch ""
-    # git config color.status.noBranch ""
-    # git config color.status.remoteBranch ""
-    # git config color.status.unmerged ""
-    git config --global color.status.untracked "#d73a49"
-    # git config color.status.updated ""
-    # git config color.transport ""
-    # git config color.transport.rejected ""
-}
-
 wsl_upgrade() {
     sudo apt update -y
     sudo apt full-upgrade -y
@@ -136,16 +69,6 @@ color_set() {
     printf "\e[${target};2;${color}m\n"
 }
 
-# man () {
-#   LESS_TERMCAP_md=$'\e[1;32m' \
-#   LESS_TERMCAP_md=$'\e[1;36m' \
-# 	LESS_TERMCAP_me=$'\e[0m' \
-# 	LESS_TERMCAP_se=$'\e[0m' \
-# 	LESS_TERMCAP_so=$'\e[1;40;92m' \
-# 	LESS_TERMCAP_ue=$'\e[0m' \
-# 	LESS_TERMCAP_us=$'\e[1;32m' \
-#   command man "@"
-# }
 
 color_init() {
 
@@ -162,76 +85,27 @@ color_init() {
     printf "\e[38;2;${COLOR_WHITE}m\n" 
     printf "\e[48;2;${COLOR_FOREGROUND}m\n"
 
-    # Less/Man Colours`
+    # Git Colors
+    # git help --config | grep color
+    git config --global color.status.changed "#d73a49"
+    git config --global color.status.untracked "#d73a49"
+
+    # LESS_TERMCAP_so=$(printf "\e[48;2;33;136;255m")
+
+
     # export LESS_TERMCAP_mb=$'\e[33;136;255m'  # Start blinking
     # export LESS_TERMCAP_md=$'\e[209;213;218m' # Start bold mode
     # export LESS_TERMCAP_so=$'\e[255;255;255m' # Start standout mode
-    # # export LESS_TERMCAP_so=$'\e[233;136;255m' # Start standout mode
+    # export LESS_TERMCAP_so=$'\e[233;136;255m' # Start standout mode
     # export LESS_TERMCAP_us=$'\e[33;136;255m'  # Start underlining
     # export LESS_TERMCAP_me=$'\e[209;213;218m' # End all mode like so, us, mb, md, and mr
     # export LESS_TERMCAP_se=$'\e[209;213;218m' # End standout mode
     # export LESS_TERMCAP_ue=$'\e[209;213;218m' # End underlining
-    # export GROFF_NO_SGR=1                     # for konsole and gnome-terminal
-
-    # export LESS_TERMCAP_mb=$'\e[30;42m' # Start blinking
-    # export LESS_TERMCAP_md=$'\e[30;42m' # Start bold mode
-    # export LESS_TERMCAP_se=$'\e[30;42m' # End standout mode
-    # export LESS_TERMCAP_so=$'\e[30;42m' # Start standout mode
-    # export LESS_TERMCAP_us=$'\e[30;42m' # Start underlining
-    # export LESS_TERMCAP_ue=$'\e[30;42m' # End underlining
-    # export LESS_TERMCAP_me=$'\e[30;42m' # End all mode like so, us, mb, md, and mr
-    # export GROFF_NO_SGR=1               # for konsole and gnome-terminal
-
-    git_colors
 
     # Set Prompt
     export PS1="[\u:\w]: "
 
     clear # Clear Screen
-
-    # export PS1="\e"
-    # echo -e "\033[38;5;224mTEST\033[0;00m"
-    # printf "\e[38;5;200mTEST\e[0;00m\n"
-    # printf %b "\e[38;#ff0000\a"
-
-    # "terminal.ansiBrightWhite": "#2f363d" 
-    # "terminal.ansiWhite": "#6a737d"
-    # "terminal.ansiBrightBlack": "#959da5"
-    # "terminal.ansiBlack": "#d1d5da"
-    # "terminal.ansiBlue": "#2188ff" 33;136;255
-    # "terminal.ansiBrightBlue": "#005cc5"
-    # "terminal.ansiGreen": "#34d058"
-    # "terminal.ansiBrightGreen": "#28a745"
-    # "terminal.ansiCyan": "#39c5cf"
-    # "terminal.ansiBrightCyan": "#56d4dd"
-    # "terminal.ansiRed": "#ea4a5a",
-    # "terminal.ansiBrightRed": "#d73a49",
-    # "terminal.ansiMagenta": "#5a32a3",
-    # "terminal.ansiBrightMagenta": "#5a32a3",
-    # "terminal.ansiYellow": "#f9c513"
-    # "terminal.ansiBrightYellow": "#f9c513"
-
-    # "black": "#1b1f23",
-    # "white": "#fff",
-    # "gray": ["#fafbfc", "#f6f8fa", "#e1e4e8", "#d1d5da", "#959da5", "#6a737d", "#586069", "#444d56", "#2f363d", "#24292e"]
-    # "blue": ["#f1f8ff", "#dbedff", "#c8e1ff", "#79b8ff", "#2188ff", "#0366d6", "#005cc5", "#044289", "#032f62", "#05264c"]
-    # "green": ["#f0fff4", "#dcffe4", "#bef5cb", "#85e89d", "#34d058", "#28a745", "#22863a", "#176f2c", "#165c26", "#144620"]
-    # "yellow": ["#fffdef", "#fffbdd", "#fff5b1", "#ffea7f", "#ffdf5d", "#ffd33d", "#f9c513", "#dbab09", "#b08800", "#735c0f"]
-    # "orange": ["#fff8f2", "#ffebda", "#ffd1ac", "#ffab70", "#fb8532", "#f66a0a", "#e36209", "#d15704", "#c24e00", "#a04100"]
-    # "red": ["#ffeef0", "#ffdce0", "#fdaeb7", "#f97583", "#ea4a5a", "#d73a49", "#cb2431", "#b31d28", "#9e1c23", "#86181d"]
-    # "purple": ["#f5f0ff", "#e6dcfd", "#d1bcf9", "#b392f0", "#8a63d2", "#6f42c1", "#5a32a3", "#4c2889", "#3a1d6e", "#29134e"]
-    # "pink": ["#ffeef8", "#fedbf0", "#f9b3dd", "#f692ce", "#ec6cb9", "#ea4aaa", "#d03592", "#b93a86", "#99306f", "#6d224f"]
-
-    # Test ANSI colors with:
-    # echo -e "\033[0mNC (No color)"
-    # echo -e "\033[1;37mWHITE\t\033[0;30mBLACK"
-    # echo -e "\033[0;34mBLUE\t\033[1;34mLIGHT_BLUE"
-    # echo -e "\033[0;32mGREEN\t\033[1;32mLIGHT_GREEN"
-    # echo -e "\033[0;36mCYAN\t\033[1;36mLIGHT_CYAN"
-    # echo -e "\033[0;31mRED\t\033[1;31mLIGHT_RED"
-    # echo -e "\033[0;35mPURPLE\t\033[1;35mLIGHT_PURPLE"
-    # echo -e "\033[0;33mYELLOW\t\033[1;33mLIGHT_YELLOW"
-    # echo -e "\033[1;30mGRAY\t\033[0;37mLIGHT_GRAY"
 
 }
 
@@ -307,7 +181,7 @@ tmux_find_get() {
 
 tmux_new_window() {
     target="${1}"
-    name=$(basename "${target}" | tr -d . | tr -d "./" | tr -d "[:blank:]")
+    name=$(basename "${target}" | tr "." "/" | tr "./" "/" | tr -d "[:blank:]")
     echo "Loading Window $name with Target $target"
     if ! tmux has-session -t=":${name}" 2> /dev/null; then
         echo "Created Window $name"

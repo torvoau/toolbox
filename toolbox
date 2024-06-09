@@ -2,85 +2,63 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# FIXME: Add parallelism    
-# sleep 30 &
-# process_id=$!
-# echo "PID: $process_id"
-# wait $process_id
-# echo "Exit status: $?"
-
-# FIXME: Set HISTFILE to not pollute history?
+help() {
+    echo "toolbox install"
+    echo "toolbox configure"
+    echo "toolbox run"
+    echo "toolbox init"
+    echo "toolbox dir"
+}
 
 install() {
+
     for var in "$@"; do
         [[ "${var}" == "--force" ]] && FORCE=true || FORCE=false
     done
 
-    export PATH="$SCRIPT_DIR/tools/bin/:$PATH"
+    export PATH="$SCRIPT_DIR/bin/:$PATH"
 
-    mkdir -p $SCRIPT_DIR/tmp/
-    mkdir -p $SCRIPT_DIR/logs/
     mkdir -p $SCRIPT_DIR/tools/
-
-    # FIXME: Add flag --force for this
     if [[ "${FORCE}" == true ]]; then
-        rm -rf $SCRIPT_DIR/tmp/*
-        rm -rf $SCRIPT_DIR/logs/*
         rm -rf $SCRIPT_DIR/tools/*
     fi
-    
-    mkdir -p $SCRIPT_DIR/tools/bin/
-    mkdir -p $SCRIPT_DIR/tools/lib/
-    mkdir -p $SCRIPT_DIR/tools/share/
-    mkdir -p $SCRIPT_DIR/tools/misc/
-    mkdir -p $SCRIPT_DIR/tools/pkg/
-    mkdir -p $SCRIPT_DIR/tools/src/
 
-    echo "Installing Go, logging to $SCRIPT_DIR/logs/go.log"
+    echo "# Installing Go"
     export GOROOT="$SCRIPT_DIR/tools/"
-    if [[ ! -f "$SCRIPT_DIR/tools/bin/go" ]]; then ( 
+    if [[ ! -d "$SCRIPT_DIR/tools/go" ]]; then ( 
         echo "## GO BEGIN"
-        cd $SCRIPT_DIR/tmp/ && curl -L -o go.tar.gz "https://go.dev/dl/go1.22.3.linux-$(dpkg --print-architecture).tar.gz"
-        rm -rf $SCRIPT_DIR/tmp/go/ && tar -xzf $SCRIPT_DIR/tmp/go.tar.gz && rm $SCRIPT_DIR/tmp/go.tar.gz
-        mv $SCRIPT_DIR/tmp/go/bin/* $SCRIPT_DIR/tools/bin/
-        mv $SCRIPT_DIR/tmp/go/lib/* $SCRIPT_DIR/tools/lib/
-        mv $SCRIPT_DIR/tmp/go/src/* $SCRIPT_DIR/tools/src/
-        mv $SCRIPT_DIR/tmp/go/misc/* $SCRIPT_DIR/tools/misc/
-        mv $SCRIPT_DIR/tmp/go/pkg/* $SCRIPT_DIR/tools/pkg/
-        mv $SCRIPT_DIR/tmp/go/go.env $SCRIPT_DIR/tools/
+        cd $SCRIPT_DIR/tools/ && curl -L -o go.tar.gz "https://go.dev/dl/go1.22.3.linux-$(dpkg --print-architecture).tar.gz"
+        rm -rf $SCRIPT_DIR/tools/go/ && tar -xzf $SCRIPT_DIR/tools/go.tar.gz && rm $SCRIPT_DIR/tools/go.tar.gz
         go version
         go env
         echo "## GO END"
-    ) &> $SCRIPT_DIR/logs/go.log; fi
+    ) fi
 
-    echo "Installing Tmux, logging to $SCRIPT_DIR/logs/tmux.log"
-    if [[ ! -f "$SCRIPT_DIR/tools/bin/tmux" ]]; then (   
+    echo "# Installing Tmux"
+    if [[ ! -d "$SCRIPT_DIR/tools/tmux" ]]; then (   
         echo "## TMUX BEGIN"
         sudo apt-get install -y libncurses-dev libevent-dev autoconf automake pkg-config yacc
-        cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/tmux/tmux.git
-        cd $SCRIPT_DIR/tmp/tmux/ && sh autogen.sh && ./configure && make
-        mv $SCRIPT_DIR/tmp/tmux/tmux $SCRIPT_DIR/tools/bin/
+        cd $SCRIPT_DIR/tools/ && git clone --depth 1 https://github.com/tmux/tmux.git
+        cd $SCRIPT_DIR/tools/tmux/ && sh autogen.sh && ./configure && make
         echo "## TMUX END"
-    ) &> $SCRIPT_DIR/logs/tmux.log; fi
+     ) fi
 
-    echo "Install Nvim, logging to $SCRIPT_DIR/logs/nvim.log"
-    if [[ ! -f "$SCRIPT_DIR/tools/bin/nvim" ]]; then (
+    echo "Install Nvim"
+    if [[ ! -d "$SCRIPT_DIR/tools/nvim" ]]; then (
         echo "## NVIM BEGIN"
         sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential
-        cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/neovim/neovim.git
-        cd $SCRIPT_DIR/tmp/neovim/ && make CMAKE_BUILD_TYPE=RelWithDebInfo CMAKE_INSTALL_PREFIX=$SCRIPT_DIR/tools/ install # make
+        cd $SCRIPT_DIR/tools/ && git clone --depth 1 https://github.com/neovim/neovim.git
+        cd $SCRIPT_DIR/tools/neovim/ && make CMAKE_BUILD_TYPE=Release install 
         echo "## NVIM END"
-    ) &> $SCRIPT_DIR/logs/nvim.log; fi
+    ) fi
 
-    echo "Installing Fzf, logging to $SCRIPT_DIR/logs/fzf.log"
-    if [[ ! -f "$SCRIPT_DIR/tools/bin/fzf" ]]; then (
+    echo "Installing Fzf"
+    if [[ ! -d "$SCRIPT_DIR/tools/fzf" ]]; then (
         echo "## FZF BEGIN"
-        rm -rf $SCRIPT_DIR/tmp/fzf/
-        cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/junegunn/fzf.git
-        # cd $SCRIPT_DIR/tmp/fzf/ && FZF_VERSION=0.52.0 FZF_REVISION=devel make && mv ./fzf $SCRIPT_DIR/tools/bin/
-        cd $SCRIPT_DIR/tmp/fzf/ && go build && mv ./fzf $SCRIPT_DIR/tools/bin/
+        cd $SCRIPT_DIR/tools/ && git clone --depth 1 https://github.com/junegunn/fzf.git
+        cd $SCRIPT_DIR/tools/fzf/ && go build
         echo "## FZF END"
-    ) &> $SCRIPT_DIR/logs/fzf.log; fi
+    ) fi
 
     sudo bash -c "echo '#!/usr/bin/env bash'       > /usr/local/bin/toolbox"
     sudo bash -c "echo '$SCRIPT_DIR/toolbox \${@}' > /usr/local/bin/toolbox"
@@ -92,12 +70,8 @@ configure() {
     echo "toolbox run" >> ~/.bash_profile
 }
 
-
 run() {
     if [[ -n "${TMUX}" ]]; then return 0; fi
-    # tmux start-server \; source-file $SCRIPT_DIR/config/tmux/.tmux.conf
-    # tmux new-session -d -s main
-    # tmux source-file $SCRIPT_DIR/config/tmux/.tmux.conf
     tmux source-file $SCRIPT_DIR/config/tmux/.tmux.conf \; new-session -d -s main
     tmux send-keys -t main "source <(toolbox init) && clear" Enter
     tmux attach-session -t main
@@ -106,25 +80,24 @@ run() {
 init() {
 
     # Paths
-    echo "export PATH='$SCRIPT_DIR/tools/bin:$PATH'"
-    echo "export VIMRUNTIME='$SCRIPT_DIR/tools/share/nvim/runtime'"
-    echo "export XDG_CONFIG_HOME='$SCRIPT_DIR/config'"
-    # echo "export XDG_DATA_HOME='$SCRIPT_DIR/data'"
+    echo "export PATH='$SCRIPT_DIR/bin:$PATH'"
 
-    # Aliases
-    echo "alias vi='nvim'"
-    echo "alias vim='nvim'"
+    # Bash
+    cat $SCRIPT_DIR/config/bash/aliases
+    cat $SCRIPT_DIR/config/bash/functions
+
+    # Colours
+    colour_init
 
     # Switch Home Directory
     if [[ "$(pwd)" == "/home/$(whoami)" ]]; then
         if [[ -n "/mnt/c/Users/$(whoami)/$(whoami)/" ]]; then
-            cd /mnt/c/Users/$(whoami)/$(whoami)/
+            echo "cd /mnt/c/Users/$(whoami)/$(whoami)/"
         elif [[ -n "/mnt/c/Users/$(whoami)/" ]]; then
-            cd /mnt/c/Users/$(whoami)/
+            echo "cd /mnt/c/Users/$(whoami)/"
         fi
     fi
 
-    cat $SCRIPT_DIR/config/bash/functions
 }
 
 dir() {
@@ -166,10 +139,89 @@ dir() {
 # FIXME: RG
 
 
-# if [[ ! $# -eq 0 ]] ; then 
-#     main
-# else 
-#     eval ${@}
-# fi
 
-eval ${@}
+
+# install_v1() {
+
+#     for var in "$@"; do
+#         [[ "${var}" == "--force" ]] && FORCE=true || FORCE=false
+#     done
+
+#     export PATH="$SCRIPT_DIR/tools/bin/:$PATH"
+
+#     mkdir -p $SCRIPT_DIR/tmp/
+#     mkdir -p $SCRIPT_DIR/logs/
+#     mkdir -p $SCRIPT_DIR/tools/
+
+#     FIXME: Add flag --force for this
+#     if [[ "${FORCE}" == true ]]; then
+#         rm -rf $SCRIPT_DIR/tmp/*
+#         rm -rf $SCRIPT_DIR/logs/*
+#         rm -rf $SCRIPT_DIR/tools/*
+#     fi
+    
+#     mkdir -p $SCRIPT_DIR/tools/bin/
+#     mkdir -p $SCRIPT_DIR/tools/lib/
+#     mkdir -p $SCRIPT_DIR/tools/share/
+#     mkdir -p $SCRIPT_DIR/tools/misc/
+#     mkdir -p $SCRIPT_DIR/tools/pkg/
+#     mkdir -p $SCRIPT_DIR/tools/src/
+
+#     echo "Installing Go, logging to $SCRIPT_DIR/logs/go.log"
+#     export GOROOT="$SCRIPT_DIR/tools/"
+#     if [[ ! -f "$SCRIPT_DIR/tools/bin/go" ]]; then ( 
+#         echo "## GO BEGIN"
+#         cd $SCRIPT_DIR/tmp/ && curl -L -o go.tar.gz "https://go.dev/dl/go1.22.3.linux-$(dpkg --print-architecture).tar.gz"
+#         rm -rf $SCRIPT_DIR/tmp/go/ && tar -xzf $SCRIPT_DIR/tmp/go.tar.gz && rm $SCRIPT_DIR/tmp/go.tar.gz
+#         mv $SCRIPT_DIR/tmp/go/bin/* $SCRIPT_DIR/tools/bin/
+#         mv $SCRIPT_DIR/tmp/go/lib/* $SCRIPT_DIR/tools/lib/
+#         mv $SCRIPT_DIR/tmp/go/src/* $SCRIPT_DIR/tools/src/
+#         mv $SCRIPT_DIR/tmp/go/misc/* $SCRIPT_DIR/tools/misc/
+#         mv $SCRIPT_DIR/tmp/go/pkg/* $SCRIPT_DIR/tools/pkg/
+#         mv $SCRIPT_DIR/tmp/go/go.env $SCRIPT_DIR/tools/
+#         go version
+#         go env
+#         echo "## GO END"
+#     ) &> $SCRIPT_DIR/logs/go.log; fi
+
+#     echo "Installing Tmux, logging to $SCRIPT_DIR/logs/tmux.log"
+#     if [[ ! -f "$SCRIPT_DIR/tools/bin/tmux" ]]; then (   
+#         echo "## TMUX BEGIN"
+#         sudo apt-get install -y libncurses-dev libevent-dev autoconf automake pkg-config yacc
+#         cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/tmux/tmux.git
+#         cd $SCRIPT_DIR/tmp/tmux/ && sh autogen.sh && ./configure && make
+#         mv $SCRIPT_DIR/tmp/tmux/tmux $SCRIPT_DIR/tools/bin/
+#         echo "## TMUX END"
+#     ) &> $SCRIPT_DIR/logs/tmux.log; fi
+
+#     echo "Install Nvim, logging to $SCRIPT_DIR/logs/nvim.log"
+#     if [[ ! -f "$SCRIPT_DIR/tools/bin/nvim" ]]; then (
+#         echo "## NVIM BEGIN"
+#         sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential
+#         cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/neovim/neovim.git
+#         # CMAKE_BUILD_TYPE=RelWithDebInfo
+#         cd $SCRIPT_DIR/tmp/neovim/ && make CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX=$SCRIPT_DIR/tools/ install # make
+#         echo "## NVIM END"
+#     ) &> $SCRIPT_DIR/logs/nvim.log; fi
+
+#     echo "Installing Fzf, logging to $SCRIPT_DIR/logs/fzf.log"
+#     if [[ ! -f "$SCRIPT_DIR/tools/bin/fzf" ]]; then (
+#         echo "## FZF BEGIN"
+#         rm -rf $SCRIPT_DIR/tmp/fzf/
+#         cd $SCRIPT_DIR/tmp/ && git clone --depth 1 https://github.com/junegunn/fzf.git
+#         # cd $SCRIPT_DIR/tmp/fzf/ && FZF_VERSION=0.52.0 FZF_REVISION=devel make && mv ./fzf $SCRIPT_DIR/tools/bin/
+#         cd $SCRIPT_DIR/tmp/fzf/ && go build && mv ./fzf $SCRIPT_DIR/tools/bin/
+#         echo "## FZF END"
+#     ) &> $SCRIPT_DIR/logs/fzf.log; fi
+
+#     sudo bash -c "echo '#!/usr/bin/env bash'       > /usr/local/bin/toolbox"
+#     sudo bash -c "echo '$SCRIPT_DIR/toolbox \${@}' > /usr/local/bin/toolbox"
+#     sudo chmod +x /usr/local/bin/toolbox
+
+# }
+
+if [[ $# -eq 0 ]] ; then 
+    help
+else 
+    eval ${@}
+fi
